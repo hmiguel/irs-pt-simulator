@@ -4,8 +4,8 @@ steps:
     args: ["install"]
   - name: node:18.15.0
     entrypoint: npm
-    args: ["run", "build"]
+    args: ["run", "build", "--openssl-legacy-provider"]
   - name: "gcr.io/cloud-builders/gcloud"
-    args: ["app", "deploy"]
+    args: ["app", "deploy", "--openssl-legacy-provider"]
 timeout: "1600s"
 
