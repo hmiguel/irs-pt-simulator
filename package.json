@@ -13,6 +13,9 @@
     "vue": "^3.2.36",
     "vue-table-dynamic": "^0.4.10"
   },
+  "engines": {
+      "node": "18.x.x"
+  },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.9",
     "@vue/cli-plugin-eslint": "~4.5.9",
