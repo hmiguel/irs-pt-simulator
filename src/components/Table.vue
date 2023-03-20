@@ -13,7 +13,7 @@
           <td>{{ index + 1 }}</td>
           <td>{{ row.description }}</td>
           <td>
-            <input v-if="row.input" v-model="row.value" type="number" />
+            <input v-if="row.input" v-model="row.value" min="0" type="number" />
             <span v-else>{{ row.value }} €</span>
           </td>
         </tr>
@@ -95,8 +95,8 @@ export default {
       this.rows[9].value = "";
     },
     // 11 IMPORTÂNCIA APURADA (9 : COEF x TAXA)
-    setTaxValue() {
-      this.rows[10].value = (parseFloat(this.rows[8].value) * 1.0 * this.taxValue.tax).toFixed(2);
+    setTaxValue(familyQuotient) {
+      this.rows[10].value = (parseFloat(this.rows[8].value) * familyQuotient * this.taxValue.tax).toFixed(2);
     },
     // 12 Parcela a abater
     setParcelToDeduct() {
@@ -130,7 +130,7 @@ export default {
     setMunicipalBenefit(county) {
       const countTax = parseFloat(this.countiesTaxes[county]);
       this.rows[19].value = (this.rows[17].value * (0.05 - countTax)).toFixed(2);
-      this.rows[19].description = "Benefício Municipal (" + countTax*100 + " % da coleta)";
+      this.rows[19].description = "Benefício Municipal (" + (0.05 - countTax)*100 + " % da coleta)";
     },
     // 21 Acréscimo à coleta
     setCollectIncrease() {
@@ -168,12 +168,13 @@ export default {
       this.payReturnTotal = (parseFloat(this.rows[24].value) + parseFloat(this.rows[25].value) + parseFloat(this.rows[26].value) + parseFloat(this.rows[27].value) + parseFloat(this.rows[28].value)).toFixed(2);
     },
     setTaxTotal(){
-      this.taxEffectiveTotal = (parseFloat(this.rows[21].value) / parseFloat(this.rows[0].value)).toFixed(4);
+      this.taxEffectiveTotal = Math.max(0, (parseFloat(this.rows[21].value) / parseFloat(this.rows[0].value)).toFixed(4));
     },
     updateComputedValues() {
       const metadata = require("../metadata.json");
       const year = "2022";
       const county = "lisboa";
+      const familyQuotient = 1;
       const euribor =  metadata[year]["euribor_12M"];
       const ssPercent = metadata[year]["social_security_tax"];
       const specificDeduction = metadata[year]["specific_deduction"];
@@ -184,7 +185,7 @@ export default {
       this.setTotalIncomeForTaxDetermination();
       this.taxValue = this.getTaxValuesForTotalIncome(year);
       this.setTaXValueDescription();
-      this.setTaxValue();
+      this.setTaxValue(familyQuotient);
       this.setParcelToDeduct();
       this.setTaxForPreviousYears();
       this.setTaxForExemptIncome();
