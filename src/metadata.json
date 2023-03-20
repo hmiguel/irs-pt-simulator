@@ -303,6 +303,7 @@
     "2022": {
         "social_security_tax": 0.11,
         "specific_deduction": 4104,
+        "euribor":  0.03291,
         "county_tax": {
             "abrantes": 0.04,
             "agueda": 0.0,
