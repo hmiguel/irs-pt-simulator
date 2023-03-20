@@ -27,9 +27,10 @@
     </div>
   </div>
 </template>
+
 <script>
 
-
+import "@/assets/irs-pt-style.css";
 
 export default {
   data() {
@@ -223,43 +224,3 @@ export default {
 };
 </script>
 
-
-<style>
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-thead {
-  background-color: #ddd;
-}
-
-th {
-  text-align: left;
-  padding: 10px;
-}
-
-td {
-  padding: 10px;
-}
-
-input[type="number"] {
-  width: 100%;
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-}
-
-input[type="number"]:focus {
-  outline: none;
-  border-color: #333;
-}
-</style>
