@@ -23,7 +23,7 @@
       <span>Valor a reembolsar {{ payReturnTotal }} €</span>
     </div>
     <div class="totalTax">
-      <span>Taxa Efetiva de Tributação - {{ taxEffectiveTotal*100 }} %</span>
+      <span>Taxa Efetiva de Tributação - {{ (taxEffectiveTotal*100).toFixed(2) }} %</span>
     </div>
   </div>
 </template>
@@ -35,7 +35,7 @@ export default {
   data() {
     return {
       rows: [
-        { description: "RENDIMENTO GLOBAL", input: true, value: 0, bold: true },
+        { description: "RENDIMENTO GLOBAL", input: true, value: 25000, bold: true },
         { description: "Deduções específicas", input: false, value: 0 },
         { description: "Perdas a recuperar", input: false, value: 0 },
         { description: "Abatimentos", input: false, value: 0 },
@@ -53,12 +53,12 @@ export default {
         { description: "Excesso em relação ao limite do quociente familiar", input: false, value: 0 },
         { description: "Imposto relativo a tributações autónomas", input: false, value: 0 },
         { description: "COLETA TOTAL [(11-12) x (1,00) + 13 - 14 + 15 + 16+17]", input: false, value: 0, bold: true },
-        { description: "Deduções à coleta", input: true, value: 0 },
+        { description: "Deduções à coleta", input: true, value: 250 },
         { description: "Benefício municipal (0,00% da coleta)", input: false, value: 0 },
         { description: "Acréscimo à coleta", input: false, value: 0 },
         { description: "COLETA LÍQUIDA [ 18 - 19 - 20 (>=0) + 21]", input: false, value: 0, bold: true },
         { description: "Pagamentos por conta", input: false, value: 0 },
-        { description: "Retenção na fonte", input: true, value: 0 },
+        { description: "Retenção na fonte", input: true, value: 4800 },
         { description: "IMPOSTOS APURADOS [22 - (23 + 24)]", input: false, value: 0, bold: true },
         { description: "Juros de retenção-poupança", input: false, value: 0 },
         { description: "Sobretaxa-resultado", input: false, value: 0 },
@@ -148,8 +148,8 @@ export default {
       this.rows[24].value = ((this.rows[22].value + this.rows[23].value) - this.rows[21].value).toFixed(2);
     },
     // 26 Juros de retenção-poupança
-    setSavingsRetentionInterest(euribor) {
-      this.rows[25].value = (euribor*0.72)*this.rows[24].value;
+    setSavingsRetentionInterest(euribor_12M) {
+      this.rows[25].value = ((euribor_12M*0.72)*this.rows[24].value).toFixed(2);
     },
     // 27 Sobretaxa-resultado
     setOverTax() {
@@ -173,7 +173,7 @@ export default {
       const metadata = require("../metadata.json");
       const year = "2022";
       const county = "lisboa";
-      const euribor =  metadata[year]["euribor"];
+      const euribor =  metadata[year]["euribor_12M"];
       const ssPercent = metadata[year]["social_security_tax"];
       const specificDeduction = metadata[year]["specific_deduction"];
       this.irsTable = metadata[year]["table"];
@@ -208,6 +208,9 @@ export default {
     boldRows() {
       return this.rows.filter((row) => row.bold);
     },
+  },
+  created: function(){
+        this.updateComputedValues()
   },
   watch: {
     rows: {
