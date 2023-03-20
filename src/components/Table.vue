@@ -173,6 +173,7 @@ export default {
       const metadata = require("../metadata.json");
       const year = "2022";
       const county = "lisboa";
+      const euribor =  metadata[year]["euribor"];
       const ssPercent = metadata[year]["social_security_tax"];
       const specificDeduction = metadata[year]["specific_deduction"];
       this.irsTable = metadata[year]["table"];
@@ -195,7 +196,7 @@ export default {
       this.setNetCollectValue();
       this.setPaymentsForAccount();
       this.setTaxValue25();
-      this.setSavingsRetentionInterest();
+      this.setSavingsRetentionInterest(euribor);
       this.setOverTax();
       this.setCompensatoryInterest();
       this.setIndemnityInterest();
