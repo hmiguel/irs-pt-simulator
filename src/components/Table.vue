@@ -148,8 +148,8 @@ export default {
       this.rows[24].value = ((this.rows[22].value + this.rows[23].value) - this.rows[21].value).toFixed(2);
     },
     // 26 Juros de retenção-poupança
-    setSavingsRetentionInterest() {
-      this.rows[25].value = 0;
+    setSavingsRetentionInterest(euribor) {
+      this.rows[25].value = (euribor*0.72)*this.rows[24].value;
     },
     // 27 Sobretaxa-resultado
     setOverTax() {
