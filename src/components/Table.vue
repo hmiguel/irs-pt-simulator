@@ -1,5 +1,21 @@
 <template>
   <div class="container">
+    <div class="year-select">
+      <label for="year">Ano Fiscal:</label>
+      <select class="irs-dropdown" v-model="year" @change="updateComputedValues">
+        <option v-for="(year) in availableYears" :key="year" :value="year">{{ year }}</option>
+      </select>
+    </div>
+    <div class="family-select">
+      <label for="family-quotient">Coeficiente familiar:</label>
+      <input id="family-quotient" type="number" v-model="familiarQuotient" style="width: 50px;" @change="updateComputedValues">
+    </div>
+    <div class="county-select">
+      <label for="county">Municipio:</label>
+      <select id="county" class="irs-dropdown" v-model="selectedCounty" @change="updateComputedValues">
+        <option v-for="(tax, county) in countiesTaxes" :key="county" :value="county">{{ county }}</option>
+      </select>
+    </div>
     <table>
       <thead>
         <tr>
@@ -13,7 +29,7 @@
           <td>{{ index + 1 }}</td>
           <td>{{ row.description }}</td>
           <td>
-            <input v-if="row.input" v-model="row.value" type="number" />
+            <input v-if="row.input" v-model="row.value" min="0" type="number" />
             <span v-else>{{ row.value }} €</span>
           </td>
         </tr>
@@ -90,13 +106,13 @@ export default {
     },
     // 10 Importância apurada
     setTaXValueDescription() {
-      this.familiarQuotient = 1;
       this.rows[9].description = "Coeficiente familiar " + this.familiarQuotient + "; taxa " + this.taxValue.tax*100 + "%";
       this.rows[9].value = "";
     },
     // 11 IMPORTÂNCIA APURADA (9 : COEF x TAXA)
-    setTaxValue() {
-      this.rows[10].value = (parseFloat(this.rows[8].value) * 1.0 * this.taxValue.tax).toFixed(2);
+    setTaxValue() {   
+      let value = (parseFloat(this.rows[8].value) * parseInt(this.familiarQuotient) * this.taxValue.tax).toFixed(2);
+      this.rows[10].value = value;
     },
     // 12 Parcela a abater
     setParcelToDeduct() {
@@ -129,8 +145,8 @@ export default {
     // 20 Benefício Municipal
     setMunicipalBenefit(county) {
       const countTax = parseFloat(this.countiesTaxes[county]);
-      this.rows[19].value = (this.rows[17].value-this.rows[18].value) * (0.05 - countTax).toFixed(2);
-      this.rows[19].description = "Benefício Municipal (" + countTax*100 + " % da coleta)";
+      this.rows[19].value = ((this.rows[17].value-this.rows[18].value) * (0.05 - countTax)).toFixed(2);
+      this.rows[19].description = "Benefício Municipal (" + county + " - " + countTax*100 + "% da coleta)";
     },
     // 21 Acréscimo à coleta
     setCollectIncrease() {
@@ -150,7 +166,7 @@ export default {
     },
     // 26 Juros de retenção-poupança
     setSavingsRetentionInterest(euribor_12M) {
-      this.rows[25].value = ((euribor_12M*0.72)*this.rows[24].value).toFixed(2);
+      this.rows[25].value = (Math.max((euribor_12M*0.72)*this.rows[24].value, 0)).toFixed(2);
     },
     // 27 Sobretaxa-resultado
     setOverTax() {
@@ -168,21 +184,28 @@ export default {
       this.payReturnTotal = (parseFloat(this.rows[24].value) + parseFloat(this.rows[25].value) + parseFloat(this.rows[26].value) + parseFloat(this.rows[27].value) + parseFloat(this.rows[28].value)).toFixed(2);
     },
     setTaxTotal(){
-      this.taxEffectiveTotal = (parseFloat(this.rows[21].value) / parseFloat(this.rows[0].value)).toFixed(4);
+      this.taxEffectiveTotal = Math.max(0, (parseFloat(this.rows[21].value) / parseFloat(this.rows[0].value)).toFixed(4));
+    },
+    init() {
+      this.metadata = require("../metadata.json"); 
+      this.selectedCounty = "Lisboa";
+      this.familiarQuotient = 1;
+      this.year = "" + new Date().getFullYear()-1;
+      this.updateComputedValues();
     },
     updateComputedValues() {
-      const metadata = require("../metadata.json");
-      const year = "2022";
-      const county = "lisboa";
-      const euribor =  metadata[year]["euribor_12M"];
-      const ssPercent = metadata[year]["social_security_tax"];
-      const specificDeduction = metadata[year]["specific_deduction"];
-      this.irsTable = metadata[year]["table"];
-      this.countiesTaxes = metadata[year]["county_tax"];
+      let metadata = this.metadata;
+      this.familiarQuotient;
+      this.availableYears = Object.keys(metadata);
+      const euribor =  metadata[this.year]["euribor_12M"];
+      const ssPercent = metadata[this.year]["social_security_tax"];
+      const specificDeduction = metadata[this.year]["specific_deduction"];
+      this.irsTable = metadata[this.year]["table"];
+      this.countiesTaxes = metadata[this.year]["county_tax"];
       this.setSpecificDeductions(ssPercent, specificDeduction);   
       this.setCollectableIncome();
       this.setTotalIncomeForTaxDetermination();
-      this.taxValue = this.getTaxValuesForTotalIncome(year);
+      this.taxValue = this.getTaxValuesForTotalIncome(this.year);
       this.setTaXValueDescription();
       this.setTaxValue();
       this.setParcelToDeduct();
@@ -192,7 +215,7 @@ export default {
       this.setExcess();
       this.setTaxForAutonomousTaxation();
       this.setTotalCollect();
-      this.setMunicipalBenefit(county);
+      this.setMunicipalBenefit(this.selectedCounty);
       this.setCollectIncrease();
       this.setNetCollectValue();
       this.setPaymentsForAccount();
@@ -211,7 +234,7 @@ export default {
     },
   },
   created: function(){
-        this.updateComputedValues()
+        this.init()
   },
   watch: {
     rows: {
