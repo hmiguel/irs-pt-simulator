@@ -129,7 +129,7 @@ export default {
     // 20 Benefício Municipal
     setMunicipalBenefit(county) {
       const countTax = parseFloat(this.countiesTaxes[county]);
-      this.rows[19].value = (this.rows[17].value-this.rows[18].value) * (0.05 - countTax)).toFixed(2);
+      this.rows[19].value = (this.rows[17].value-this.rows[18].value) * (0.05 - countTax).toFixed(2);
       this.rows[19].description = "Benefício Municipal (" + countTax*100 + " % da coleta)";
     },
     // 21 Acréscimo à coleta
