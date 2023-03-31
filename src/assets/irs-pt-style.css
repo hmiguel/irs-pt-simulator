@@ -66,3 +66,25 @@
     color: #555;
   }
   
+  .github-link {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .github-link a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .irs-dropdown {
+    font-size: 16px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+  }
