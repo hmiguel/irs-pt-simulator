@@ -184,7 +184,7 @@ export default {
       this.payReturnTotal = (parseFloat(this.rows[24].value) + parseFloat(this.rows[25].value) + parseFloat(this.rows[26].value) + parseFloat(this.rows[27].value) + parseFloat(this.rows[28].value)).toFixed(2);
     },
     setTaxTotal(){
-      this.taxEffectiveTotal = Math.max(0, (parseFloat(this.rows[21].value) / parseFloat(this.rows[0].value)).toFixed(4));
+      this.taxEffectiveTotal = Math.max(0, (parseFloat(this.rows[21].value) / parseFloat(this.rows[5].value)).toFixed(4));
     },
     init() {
       this.metadata = require("../metadata.json"); 
